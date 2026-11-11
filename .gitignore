@@ -1,0 +1,4 @@
+build/
+app/
+.vscode/
+.DS_Store
