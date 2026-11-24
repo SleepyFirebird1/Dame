@@ -11,24 +11,19 @@ enum class Piece
 
 class Board
 {
-    private:
-        // Plansza
-        Piece grid[8][8];
-    public:
-        // Konstruktor
-        Board();
+  private:
+    Piece grid[8][8];
 
-        Piece getPiece(int x, int y) const;
-        void setPiece(int x, int y, Piece piece);
+  public:
+    Board();
 
-        // Metody logiczne
-        bool hasForcedCapture(Piece playerColor) const;
-        bool isMoveValid(int fromX, int fromY, int toX, int toY, Piece playerColor) const;
+    Piece getPiece(int x, int y) const;
+    void setPiece(int x, int y, Piece piece);
 
-        // Metoda poruszająca, która będzie wykrywać bicie automatycznie
-        void makeMove(int fromX, int fromY, int toX, int toY);
+    bool hasForcedCapture(Piece playerColor) const;
+    bool isMoveValid(int fromX, int fromY, int toX, int toY,
+                     Piece playerColor) const;
+    void makeMove(int fromX, int fromY, int toX, int toY);
 
-        Piece checkWinCondition() const;
-
-
+    Piece checkWinCondition() const;
 };

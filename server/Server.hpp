@@ -1,29 +1,28 @@
 #pragma once
-#include <vector>
-#include <thread>
 #include <mutex>
 #include <netinet/in.h>
+#include <thread>
+#include <vector>
 
 class Server
 {
-    private:
-        int serverSocket;
-        int port;
-        bool isRunning;
+  private:
+    int serverSocket;
+    int port;
+    bool isRunning;
 
-        // Kolejka oczekujących graczy
-        std::vector<int> waitingPlayers;
-        std::mutex queueMutex;
+    // Kolejka oczekujących graczy
+    std::vector<int> waitingPlayers;
+    std::mutex queueMutex;
 
-        void acceptClients();
-        void matchPlayers();
-        void startGameSession(int player1Socket, int player2Socket);
+    void acceptClients();
+    void matchPlayers();
+    void startGameSession(int player1Socket, int player2Socket);
 
-    public:
-        Server(int port);
-        ~Server();
+  public:
+    Server(int port);
+    ~Server();
 
-        void start();
-        void stop();
-    
+    void start();
+    void stop();
 };

@@ -1,16 +1,13 @@
 #include "Server.hpp"
 #include "GameSession.hpp"
+#include <cstring>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <cstring>
 
 Server::Server(int port) : port(port), isRunning(false), serverSocket(-1) {}
 
-Server::~Server()
-{
-    stop();
-}
+Server::~Server() { stop(); }
 
 void Server::start()
 {
@@ -21,10 +18,11 @@ void Server::start()
         std::cerr << "Błąd: Nie udało się utworzyć gniazda\n";
         return;
     }
-    // Dodanie opcji SO_REUSEADDR eliminuje problem zajtego portu po zamkniciu serwera
+    // Dodanie opcji SO_REUSEADDR eliminuje problem zajtego portu po zamkniciu
+    // serwera
     int opt = 1;
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    
+
     // Konfiguracja adresu i portu
     sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -33,7 +31,8 @@ void Server::start()
     serverAddr.sin_port = htons(port);
 
     // Bindowanie portu
-    if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
+    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) <
+        0)
     {
         std::cerr << "Błąd: Nie udało się zbindować gniazda\n";
         return;
@@ -47,11 +46,11 @@ void Server::start()
     }
 
     isRunning = true;
-    std::cout << "Serwer uruchomiony. Nasłuchiwanie na porcie: " << port << "\n";
+    std::cout << "Serwer uruchomiony. Nasłuchiwanie na porcie: " << port
+              << "\n";
 
     // Petla akceptująca graczy
     acceptClients();
-
 }
 
 void Server::stop()
@@ -72,16 +71,19 @@ void Server::acceptClients()
     while (isRunning)
     {
         // Akceptacja klienta czkekającego w serverSocket
-        int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientSize);
+        int clientSocket =
+            accept(serverSocket, (struct sockaddr *)&clientAddr, &clientSize);
 
         if (clientSocket < 0)
         {
-            if (isRunning) std::cerr << "Błąd: Klient nie został zaakceptowany\n";
+            if (isRunning)
+                std::cerr << "Błąd: Klient nie został zaakceptowany\n";
             continue;
         }
         else
         {
-            std::cout << "Nowy gracz połączony Socket ID: " << clientSocket << "\n";
+            std::cout << "Nowy gracz połączony Socket ID: " << clientSocket
+                      << "\n";
         }
 
         {
@@ -103,9 +105,11 @@ void Server::matchPlayers()
         int player2 = waitingPlayers[1];
 
         // Usunięcie dwóch pierwszych graczy z kolejki
-        waitingPlayers.erase(waitingPlayers.begin(), waitingPlayers.begin() + 2);
+        waitingPlayers.erase(waitingPlayers.begin(),
+                             waitingPlayers.begin() + 2);
 
-        std::cout << "Znaleziono pare P1: " << player1 << " P2: " << player2 << "\n";
+        std::cout << "Znaleziono pare P1: " << player1 << " P2: " << player2
+                  << "\n";
 
         // Uruchomienie sesje dla graczy w nowym wątku
         startGameSession(player1, player2);
@@ -114,17 +118,19 @@ void Server::matchPlayers()
 
 void Server::startGameSession(int player1Socket, int player2Socket)
 {
-    std::thread sessionThread([player1Socket, player2Socket]()
-    {
-       std::cout << "Rozpoczynam nową grę dla gniazd " << player1Socket << " i " << player2Socket << "\n";
-       
-       GameSession session(player1Socket, player2Socket);
+    std::thread sessionThread(
+        [player1Socket, player2Socket]()
+        {
+            std::cout << "Rozpoczynam nową grę dla gniazd " << player1Socket
+                      << " i " << player2Socket << "\n";
 
-       session.run();
+            GameSession session(player1Socket, player2Socket);
 
-       std::cout << " Wątek gry dla gniazd " << player1Socket << " i " << player2Socket << " zakonczońy.\n";
+            session.run();
 
-    });
+            std::cout << " Wątek gry dla gniazd " << player1Socket << " i "
+                      << player2Socket << " zakonczońy.\n";
+        });
 
     sessionThread.detach();
 }
