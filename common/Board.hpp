@@ -1,6 +1,6 @@
 #pragma once
 
-enum class Piece 
+enum class Piece
 {
     EMPTY = 0,
     WHITE_PAWN = 1,

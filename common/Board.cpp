@@ -22,37 +22,37 @@ Board::Board()
                     grid[y][x] = Piece::WHITE_PAWN;
                 }
             }
-        } 
+        }
     }
 };
-Piece Board::getPiece(int x, int y) const 
+Piece Board::getPiece(int x, int y) const
 {
     // Zabezpieczenie przed odwołanie poza plansze
-    if (x >= 0 && x < 8 && y >= 0 && y < 8) 
+    if (x >= 0 && x < 8 && y >= 0 && y < 8)
     {
         return grid[y][x];
     }
     return Piece::EMPTY;
 }
 
-void Board::setPiece(int x, int y, Piece piece) 
+void Board::setPiece(int x, int y, Piece piece)
 {
-    if (x >= 0 && x < 8 && y >= 0 && y < 8) 
+    if (x >= 0 && x < 8 && y >= 0 && y < 8)
     {
         grid[y][x] = piece;
     }
 }
 
-bool Board::hasForcedCapture(Piece playerColor) const 
+bool Board::hasForcedCapture(Piece playerColor) const
 {
     bool isWhitePlayer = (playerColor == Piece::WHITE_PAWN || playerColor == Piece::WHITE_QUEEN);
 
-    for (int y = 0; y < 8; ++y) 
+    for (int y = 0; y < 8; ++y)
     {
-        for (int x = 0; x < 8; ++x) 
+        for (int x = 0; x < 8; ++x)
         {
             Piece p = grid[y][x];
-            
+
             // Sprawdzenie czy pion naley do wlaściwego gracza
             bool isWhitePiece = (p == Piece::WHITE_PAWN || p == Piece::WHITE_QUEEN);
             bool isBlackPiece = (p == Piece::BLACK_PAWN || p == Piece::BLACK_QUEEN);
@@ -63,7 +63,7 @@ bool Board::hasForcedCapture(Piece playerColor) const
             int jumpDx[] = {-2, 2, -2, 2};
             int jumpDy[] = {-2, -2, 2, 2};
 
-            for (int i = 0; i < 4; ++i) 
+            for (int i = 0; i < 4; ++i)
             {
                 int toX = x + jumpDx[i];
                 int toY = y + jumpDy[i];
@@ -78,7 +78,7 @@ bool Board::hasForcedCapture(Piece playerColor) const
                 if (p == Piece::BLACK_PAWN && jumpDy[i] < 0) continue;
 
                 // Sprawdzenie czy docelowe pole jest puste
-                if (grid[toY][toX] == Piece::EMPTY) 
+                if (grid[toY][toX] == Piece::EMPTY)
                 {
                     Piece midPiece = grid[midY][midX];
                     bool isMidWhite = (midPiece == Piece::WHITE_PAWN || midPiece == Piece::WHITE_QUEEN);
@@ -96,7 +96,7 @@ bool Board::hasForcedCapture(Piece playerColor) const
 
 bool Board::isMoveValid(int fromX, int fromY, int toX, int toY, Piece playerColor) const {
     // Sprawdzenie czy ruch jest w obrębie planszy
-    if (fromX < 0 || fromX > 7 || fromY < 0 || fromY > 7 || 
+    if (fromX < 0 || fromX > 7 || fromY < 0 || fromY > 7 ||
         toX < 0 || toX > 7 || toY < 0 || toY > 7) return false;
 
     Piece movingPiece = grid[fromY][fromX];
@@ -124,16 +124,16 @@ bool Board::isMoveValid(int fromX, int fromY, int toX, int toY, Piece playerColo
     if (movingPiece == Piece::BLACK_PAWN && dy < 0) return false; // Czarne ida w dol (Y rosnie)
 
     // Logika zwyklego ruchu i bicia
-    if (distance == 1) 
+    if (distance == 1)
     {
         // Weryfikacja czy nie ma wymuszonego bicia
-        if (hasForcedCapture(playerColor)) 
+        if (hasForcedCapture(playerColor))
         {
             return false;
         }
         return true;
-    } 
-    else if (distance == 2) 
+    }
+    else if (distance == 2)
     {
         // Weryfikacja co stoi po środku
         int midX = (fromX + toX) / 2;
@@ -157,13 +157,13 @@ bool Board::isMoveValid(int fromX, int fromY, int toX, int toY, Piece playerColo
 
 void Board::makeMove(int fromX, int fromY, int toX, int toY) {
     Piece movingPiece = grid[fromY][fromX];
-    
+
     // Przeniesienie pionka na nowe pole
     grid[toY][toX] = movingPiece;
     grid[fromY][fromX] = Piece::EMPTY;
 
     // Sprawdzenie czy było bicie
-    if (std::abs(toX - fromX) == 2) 
+    if (std::abs(toX - fromX) == 2)
     {
         int midX = (fromX + toX) / 2;
         int midY = (fromY + toY) / 2;
@@ -171,31 +171,31 @@ void Board::makeMove(int fromX, int fromY, int toX, int toY) {
     }
 
     // Promocja na damke po dojściu do końca planszy
-    if (movingPiece == Piece::WHITE_PAWN && toY == 0) 
+    if (movingPiece == Piece::WHITE_PAWN && toY == 0)
     {
         grid[toY][toX] = Piece::WHITE_QUEEN;
-    } 
-    else if (movingPiece == Piece::BLACK_PAWN && toY == 7) 
+    }
+    else if (movingPiece == Piece::BLACK_PAWN && toY == 7)
     {
         grid[toY][toX] = Piece::BLACK_QUEEN;
     }
 }
 
-Piece Board::checkWinCondition() const 
+Piece Board::checkWinCondition() const
 {
     bool whiteHasPieces = false;
     bool blackHasPieces = false;
 
-    for (int y = 0; y < 8; ++y) 
+    for (int y = 0; y < 8; ++y)
     {
-        for (int x = 0; x < 8; ++x) 
+        for (int x = 0; x < 8; ++x)
         {
             Piece p = grid[y][x];
-            if (p == Piece::WHITE_PAWN || p == Piece::WHITE_QUEEN) 
+            if (p == Piece::WHITE_PAWN || p == Piece::WHITE_QUEEN)
             {
                 whiteHasPieces = true;
             }
-            else if (p == Piece::BLACK_PAWN || p == Piece::BLACK_QUEEN) 
+            else if (p == Piece::BLACK_PAWN || p == Piece::BLACK_QUEEN)
             {
                 blackHasPieces = true;
             }
@@ -204,7 +204,7 @@ Piece Board::checkWinCondition() const
 
     // Jeśli czarni nie mają już czym grać, wygrywają biali
     if (!blackHasPieces) return Piece::WHITE_PAWN;
-    
+
     // Jeśli biali nie mają już czym grać, wygrywają czarni
     if (!whiteHasPieces) return Piece::BLACK_PAWN;
 

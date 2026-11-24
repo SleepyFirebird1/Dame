@@ -25,6 +25,8 @@ struct MatchFoundPacket
     int32_t playerColor;
 };
 
-struct BoardUpdatePacket {
+struct BoardUpdatePacket
+{
     uint8_t grid[8][8];
+    uint8_t currentTurn;
 };
